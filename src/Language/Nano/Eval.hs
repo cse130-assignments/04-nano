@@ -134,22 +134,22 @@ exitError (Error msg) = return (VErr msg)
 --
 -- part (d)
 --
--- >>> eval [] (EApp (ELam "x" (EBin Plus "x" "x")) (EInt 3))
+-- >>> eval [] (EApp (ELam "x" (EBin Plus (EVar "x") (EVar "x"))) (EInt 3))
 -- 6
 --
--- >>> let e3 = ELet "h" (ELam "y" (EBin Plus "x" "y")) (EApp "f" "h")
+-- >>> let e3 = ELet "h" (ELam "y" (EBin Plus (EVar "x") (EVar "y"))) (EApp (EVar "f") (EVar "h"))
 -- >>> let e2 = ELet "x" (EInt 100) e3
--- >>> let e1 = ELet "f" (ELam "g" (ELet "x" (EInt 0) (EApp "g" (EInt 2)))) e2
+-- >>> let e1 = ELet "f" (ELam "g" (ELet "x" (EInt 0) (EApp (EVar "g") (EInt 2)))) e2
 -- >>> eval [] e1
 -- 102
 --
 -- part (e)
 -- |
 -- >>> :{
--- eval [] (ELet "fac" (ELam "n" (EIf (EBin Eq "n" (EInt 0))
+-- eval [] (ELet "fac" (ELam "n" (EIf (EBin Eq (EVar "n") (EInt 0))
 --                                  (EInt 1)
---                                  (EBin Mul "n" (EApp "fac" (EBin Minus "n" (EInt 1))))))
---             (EApp "fac" (EInt 10)))
+--                                  (EBin Mul (EVar "n") (EApp (EVar "fac") (EBin Minus (EVar "n") (EInt 1))))))
+--             (EApp (EVar "fac") (EInt 10)))
 -- :}
 -- 3628800
 --
@@ -158,9 +158,9 @@ exitError (Error msg) = return (VErr msg)
 -- >>> let el = EBin Cons (EInt 1) (EBin Cons (EInt 2) ENil)
 -- >>> execExpr el
 -- (1 : (2 : []))
--- >>> execExpr (EApp "head" el)
+-- >>> execExpr (EApp (EVar "head") el)
 -- 1
--- >>> execExpr (EApp "tail" el)
+-- >>> execExpr (EApp (EVar "tail") el)
 -- (2 : [])
 --------------------------------------------------------------------------------
 eval :: Env -> Expr -> Value

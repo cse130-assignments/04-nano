@@ -140,7 +140,16 @@ unit sc = testGroup "NANO"
                   (Nano.EApp (Nano.EVar "g") (Nano.EVar "x")))
               , 1
               , "2e - 1+a&&b||c+d*e-f-g x")
-
+  , scoreTest ( parse
+              , "1+f x*3"
+              , Nano.EBin Nano.Plus (Nano.EInt 1) (Nano.EBin Nano.Mul (Nano.EApp (Nano.EVar "f") (Nano.EVar "x")) (Nano.EInt 3))
+              , 1
+              , "2e - 1+f x*3")
+  , scoreTest ( parse
+              , "f x y z"
+              , Nano.EApp (Nano.EApp (Nano.EApp (Nano.EVar "f") (Nano.EVar "x")) (Nano.EVar "y")) (Nano.EVar "z")
+              , 1
+              , "2e - f x y z")
   , scoreTest ( parse
               , "e : f"
               , Nano.EBin Nano.Cons (Nano.EVar "e") (Nano.EVar "f")

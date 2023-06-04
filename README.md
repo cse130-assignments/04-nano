@@ -1,4 +1,4 @@
-# Assignment 4: Nano (Points: 56 public / 270 private)
+# Assignment 4: Nano (Points: 58 public / 270 private)
 
 ## Overview
 
@@ -732,11 +732,10 @@ ELet "z" (EInt 3) (ELet "y" (EInt 2) (ELet "x" (EInt 1) (ELet "z1" (EInt 0) (EBi
 
 ### (e) 35 points
 
-Restructure your parser to give binary operators the following
-precedence and associativity.  This will likely require that you both
-add additional rules to your parser and use
-[Happy's precedence syntax](https://www.haskell.org/happy/doc/html/sec-Precedences.html)
-
+Give function application (`f x`) the correct precedence and assocatitivity.
+The starter code already provides the correct parser directives for the binop
+operations, but you're responsible for making sure function application has the
+highest precedence and has left assocativity.
 
 **Operators Precedence Order**
 
@@ -749,8 +748,8 @@ add additional rules to your parser and use
 + `->`
 + (Lowest) `=`, `if`, `then`, `else`, `in`
 
-**Precedence** Function application having higher precedence than
-multiplications, and multiplication higher than addition,
+**Precedence** Function application has higher precedence than
+multiplications, and multiplication is higher than addition,
 so `"1+f x*3"` should be parsed as if it were
 `"1+((f x)*3)"`.
 
@@ -766,6 +765,10 @@ you should get the following behavior:
 EBin Minus (EBin Minus (EInt 1) (EInt 2)) (EInt 3)
 >>> parse "1+a&&b||c+d*e-f-g x"
 EBin Or (EBin And (EBin Plus (EInt 1) (EVar "a")) (EVar "b")) (EBin Minus (EBin Minus (EBin Plus (EVar "c") (EBin Mul (EVar "d") (EVar "e"))) (EVar "f")) (EApp (EVar "g") (EVar "x")))
+>>> parse "1+f x*3"
+EBin Plus (EInt 1) (EBin Mul (EApp (EVar "f") (EVar "x")) (EInt 3))
+>>> parse "f x y z"
+EApp (EApp (EApp (EVar "f") (EVar "x")) (EVar "y")) (EVar "z")
 ```
 
 ### (f) 15 points

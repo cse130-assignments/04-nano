@@ -523,6 +523,9 @@ following behavior
 
 >>> execExpr (EApp (EVar "tail") el)
 (2 : [])
+
+>>> eval [] (EApp (EVar "head") (EBin Cons (EInt 1) ENil))
+*** Exception: Error {errMsg = "unbound variable: head"}
 ```
 The constructor `VPrim` will come in handy here.
 

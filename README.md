@@ -81,6 +81,16 @@ The other lines will give you a readout for each test.
 You are encouraged to try to understand the testing code,
 but you will not be graded on this.
 
+## Debugging the File Tests/Writing Your Own File Tests
+These are the last tests you should work on. These tests take in files as input, and run it through the lexer, parser, and evaluator.
+
+Copy pasting the contents of a file into `make ghci` will run it as a Haskell program and won’t use your lexer, parser, or evaluator! To run a file through your Nano implementation, you want to use `execFile`.
+
+The files themselves are in tests/input. In tests/Test.hs, the fileTests list the file, the expected answer, and the point value in the test suite.
+1. run `parseTokens <$> readFile "tests/input/t1.hs"` to run t1.hs through the lexer and get the Tokens. (start here, check for lexer errors, and if you’re good, move down!)
+2. run `parse <$> readFile "tests/input/t1.hs"` to run t1.hs through the lexer and parser and get an Expr,
+3. run `execFile "tests/input/t1.hs"` to run t1.hs through your lexer, parser and evaluator, and see what your interpreter is returning.
+
 ## Submission Instructions
 
 Submit your code via the HW-4 assignment on Gradescope. Connect your Github account to Gradescope and select your repo. If you're in a group, don't forget to add your partner to the submission!

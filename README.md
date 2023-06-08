@@ -676,6 +676,7 @@ Add the following tokens to the lexer and parser.
 | `==`    | `EQL`   |
 | `/=`    | `NEQ`   |
 | `\|\|`  | `OR`    |
+| `&&`    | `AND`   |
 
 
 Add all of these as binary operators to your parser.

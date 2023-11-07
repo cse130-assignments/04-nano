@@ -41,6 +41,7 @@ tokens :-
 
 data Token
   = LET    AlexPosn
+  | LETREC AlexPosn
   | TRUE   AlexPosn
   | FALSE  AlexPosn
   | IN     AlexPosn

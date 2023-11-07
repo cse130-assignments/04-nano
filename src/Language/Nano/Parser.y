@@ -26,33 +26,34 @@ import Control.Exception
 
 -- Token Names
 %token
-    let   { LET _    }
-    true  { TRUE _   }
-    false { FALSE _  }
-    in    { IN _     }
-    if    { IF _     }
-    then  { THEN _   }
-    else  { ELSE _   }
-    TNUM  { NUM _ $$ }
-    ID    { ID _ $$  }
-    '\\'  { LAM _    }
-    '->'  { ARROW _  }
-    '='   { EQB _    }
-    '+'   { PLUS _   }
-    '-'   { MINUS _  }
-    '*'   { MUL _    }
-    '&&'  { AND _    }
-    '||'  { OR  _    }
-    '=='  { EQL _    }
-    '/='  { NEQ _    }
-    '<'   { LESS _   }
-    '<='  { LEQ _    }
-    ':'   { COLON _  }
-    '('   { LPAREN _ }
-    ')'   { RPAREN _ }
-    '['   { LBRAC _  }
-    ']'   { RBRAC _  }
-    ','   { COMMA _  }
+    let     { LET _    }
+    letrec  { LETREC _ }
+    true    { TRUE _   }
+    false   { FALSE _  }
+    in      { IN _     }
+    if      { IF _     }
+    then    { THEN _   }
+    else    { ELSE _   }
+    TNUM    { NUM _ $$ }
+    ID      { ID _ $$  }
+    '\\'    { LAM _    }
+    '->'    { ARROW _  }
+    '='     { EQB _    }
+    '+'     { PLUS _   }
+    '-'     { MINUS _  }
+    '*'     { MUL _    }
+    '&&'    { AND _    }
+    '||'    { OR  _    }
+    '=='    { EQL _    }
+    '/='    { NEQ _    }
+    '<'     { LESS _   }
+    '<='    { LEQ _    }
+    ':'     { COLON _  }
+    '('     { LPAREN _ }
+    ')'     { RPAREN _ }
+    '['     { LBRAC _  }
+    ']'     { RBRAC _  }
+    ','     { COMMA _  }
 
 -- Operators
 %right in

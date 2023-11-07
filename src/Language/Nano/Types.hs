@@ -38,6 +38,7 @@ data Expr
   | EBin Binop Expr Expr
   | EIf  Expr Expr  Expr
   | ELet Id   Expr  Expr
+  | ELetFun Id Expr Expr
   | EApp Expr Expr
   | ELam Id   Expr
   deriving (Eq, Show)

@@ -139,7 +139,6 @@ data Expr
   | EBin Binop Expr Expr
   | EIf  Expr Expr  Expr
   | ELet Id   Expr  Expr
-  | ELetFun Id Expr Expr
   | EApp Expr Expr
   | ELam Id   Expr
   deriving (Eq)
@@ -193,21 +192,19 @@ is represented by
 EApp (EVar "f") (EVar "x")
 ```
 
-4. (Possibly recursive) let-bindings for functions
+4. (Recursive) Named Functions
 
 ```haskell
-let f x = f x in
+let f = \ x -> f x in
   f 5
 ```
 
 is represented by
 
 ```haskell
-ELetFun "f" (ELam "x" (EApp (EVar "f") (EVar "x")))
+ELet "f" (ELam "x" (EApp (EVar "f") (EVar "x")))
   (EApp (EVar "f") (EInt 5))
 ```
-
-We will ensure that in `LetFun name e1 e2`, `e1` is always an `ELam` expression.
 
 
 ### Values
@@ -478,23 +475,15 @@ recompiled, you should get the following behavior:
 
 ### (e) 30 points
 
-Next, add support for recursively defined functions, which use the `ELetFun`
-constructor.
-
-```haskell
-data Expr
-  = ...
-	| ELetFun Id Expr Expr
-```
-
-Once you have implemented this functionality, you should get the following
-behavior:
+Make the above work for recursively defined functions.
+Once you have implemented this functionality, you should
+get the following behavior:
 
 ```haskell
 -- >>> :{
--- eval [] (ELetFun "fac" (ELam "n" (EIf (EBin Eq (EVar "n") (EInt 0))
---                                    (EInt 1)
---                                    (EBin Mul (EVar "n") (EApp (EVar "fac") (EBin Minus (EVar "n") (EInt 1))))))
+-- eval [] (ELet "fac" (ELam "n" (EIf (EBin Eq (EVar "n") (EInt 0))
+--                                  (EInt 1)
+--                                  (EBin Mul (EVar "n") (EApp (EVar "fac") (EBin Minus (EVar "n") (EInt 1))))))
 --             (EApp (EVar "fac") (EInt 10)))
 -- :}
 -- 3628800
@@ -569,7 +558,6 @@ rules for
 * `NUM` which has a single `Int` argument,
    which holds the value of the numeric literal,
    which corresponds to a sequence of one or more digits.
-
 ---
 **Note**
 Be careful when implementing the regular expressions for in `Lexer.x`,
@@ -634,14 +622,13 @@ Add the following tokens to the lexer and parser.
 | `else`  | `ELSE`  |
 
 
-These should be parsed to `ELet`, `ELetFun`, `ELam`, and `EIf`
+These should be parsed to `ELet`, `ELam`, and `EIf`
 expressions, that is,
 
-- A **let** expression should have one of the two following forms:
-  - a **simple** let expression should be `let <id> = <expr> in <expr>`
-  - a **function** let expression should be `let <id> <ids> = <expr> in <expr>`
-- A **function** expression should have the form `\ <id> -> <expr>`
-- An **if** expression should be `if <expr> then <expr> else <expr>`
+- a **let** expression should have the form `let <id> = <expr> in <expr>`,
+  or the form `let <id> <ids> = <expr> in <expr>`,
+- a **function** expression should have the form `\ <id> -> <expr>` and
+- an **if** expression should be `if <expr> then <expr> else <expr>`.
 
 Here `<id>` denotes any identifier from part (a),
 `<ids>` denotes a sequence of one or many space-separated `<id>`s,
@@ -662,7 +649,7 @@ you should get the following behavior prompt:
 ```haskell
 >>> parseTokens "let foo = \\x -> if y then z else w in foo"
 
-Right [LET (AlexPn 0 1 1),ID (AlexPn 4 1 5) "foo",EQL (AlexPn 8 1 9),
+Right [LET (AlexPn 0 1 1),ID (AlexPn 4 1 5) "foo",EQB (AlexPn 8 1 9),
        LAM (AlexPn 10 1 11),ID (AlexPn 11 1 12) "x",ARROW (AlexPn 13 1 14),
        IF (AlexPn 16 1 17),ID (AlexPn 19 1 20) "y",THEN (AlexPn 21 1 22),
        ID (AlexPn 26 1 27) "z",ELSE (AlexPn 28 1 29),ID (AlexPn 33 1 34) "w",
@@ -672,7 +659,7 @@ Right [LET (AlexPn 0 1 1),ID (AlexPn 4 1 5) "foo",EQL (AlexPn 8 1 9),
 ELet "foo" (ELam "x" (EIf (EVar "y") (EVar "z") (EVar "w"))) (EVar "foo")
 
 >>> parse "let foo x = if y then z else w in foo"
-ELetFun "foo" (ELam "x" (EIf (EVar "y") (EVar "z") (EVar "w"))) (EVar "foo")
+ELet "foo" (ELam "x" (EIf (EVar "y") (EVar "z") (EVar "w"))) (EVar "foo")
 ```
 
 ### (c) 15 points
@@ -686,7 +673,7 @@ Add the following tokens to the lexer and parser.
 | `*`     | `MUL`   |
 | `<`     | `LESS`  |
 | `<=`    | `LEQ`   |
-| `==`    | `EQB`   |
+| `==`    | `EQL`   |
 | `/=`    | `NEQ`   |
 | `\|\|`  | `OR`    |
 | `&&`    | `AND`   |
@@ -707,7 +694,7 @@ recompiled, you should get the following behavior:
 Right [PLUS (AlexPn 0 1 1),MINUS (AlexPn 2 1 3),
        MUL (AlexPn 4 1 5),OR (AlexPn 6 1 7),
        LESS (AlexPn 9 1 10),LEQ (AlexPn 11 1 12),
-       EQL (AlexPn 14 1 15),AND (AlexPn 16 1 17),
+       EQB (AlexPn 14 1 15),AND (AlexPn 16 1 17),
        NEQ (AlexPn 19 1 20)]
 
 >>> parse "x + y"

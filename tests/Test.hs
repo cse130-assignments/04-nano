@@ -51,7 +51,7 @@ unit sc = testGroup "NANO"
               , 2
               , "1d - (\\x -> x*x) 5")
   , scoreTest ( Nano.eval []
-              , (Nano.ELetFun "fac"
+              , (Nano.ELet "fac"
                   (Nano.ELam "n"
                     (Nano.EIf (Nano.EBin Nano.Eq (Nano.EVar "n") (Nano.EInt 0))
                       (Nano.EInt 1)
@@ -61,7 +61,7 @@ unit sc = testGroup "NANO"
                   (Nano.EApp (Nano.EVar "fac") (Nano.EInt 10)))
               , Nano.VInt 3628800
               , 1
-              , "1e - let fac n = if n == 0 then 1 else n * fac (n - 1) in fac 10")
+              , "1e - let fac = (\\ n -> if n == 0 then 1 else n * fac (n - 1)) in fac 10")
   , scoreTest ( Nano.eval Nano.prelude
               , (Nano.EApp (Nano.EVar "head") (Nano.EBin Nano.Cons (Nano.EInt 1) Nano.ENil))
               , Nano.VInt 1

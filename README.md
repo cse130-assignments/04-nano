@@ -217,9 +217,10 @@ data Value
   = VInt  Int
   | VBool Bool
   | VClos Env Id Expr
+  | VRec Id Env Id Expr
+  | VPrim (Value -> Value)
   | VNil
   | VCons Value Value
-  | VPrim (Value -> Value)
 ```
 
 where an `Env` is simply a dictionary: a list of pairs
@@ -234,9 +235,11 @@ Intuitively, the Nano integer value `4` and boolean value
 The more interesting case is for closures that correspond to
 function values (see [lecture notes](https://nadia-polikarpova.github.io/cse130-web/lectures/05-closure.html)).
 
-- `VClos env "x" e` represents a function with argument `"x"`
-   and body-expression `e` that was defined in an environment
-   `env`.
+- `VClos env "x" e` represents a function with argument `"x"` and
+  body-expression `e` that was defined in an environment `env`.
+- Similarly, `VRec "f" env "x" e` represents a potentially-recursive function
+  named `"f"` with argument `"x"` and body-expression `e` that was defined in an
+  environment `env`.
 
 ## Problem 1: Nano Interpreter (Eval.hs)
 
@@ -447,10 +450,8 @@ data Value
 	| VClos Env Id Expr
 ```
 
-For now, assume the functions *are not recursive*.
-
-However, functions do have values represented by
-the `VClos env x e` where
+For now, assume the functions *are not recursive*. Non-recursive functions have
+values represented by `VClos env x e` where
 
 * `env` is the environment at the point where
    that function was declared,
@@ -475,9 +476,29 @@ recompiled, you should get the following behavior:
 
 ### (e) 30 points
 
-Make the above work for recursively defined functions.
-Once you have implemented this functionality, you should
-get the following behavior:
+Next, extend the evaluator with support for recursive functions.
+
+```haskell
+data Value
+  = ...
+	| VRec Id Env Id Expr
+```
+
+Recursive functions have a value represented as `VRec f env x e` where
+
+* `env` is the environment at the point where
+   that function was declared,
+* `x` is the formal parameter, and
+* `e` the body expression of the function.
+
+Whenever the first expression in a `let`-`in` expression is a lambda, it should
+be treated as potentially recursive, and should evaluate to a `VRec` value
+instead of a `VClos` value.
+You will also have to extend the evaluation of `EApp` to support applying
+recursive functions.
+
+Once you have implemented this functionality, you should get the following
+behavior:
 
 ```haskell
 -- >>> :{
@@ -614,7 +635,7 @@ Add the following tokens to the lexer and parser.
 | String  | Token   |
 |:--------|:--------|
 | `let`   | `LET`   |
-| `=`     | `EQB`   |
+| `=`     | `EQL`   |
 | `\`     | `LAM`   |
 | `->`    | `ARROW` |
 | `if`    | `IF`    |
@@ -649,7 +670,7 @@ you should get the following behavior prompt:
 ```haskell
 >>> parseTokens "let foo = \\x -> if y then z else w in foo"
 
-Right [LET (AlexPn 0 1 1),ID (AlexPn 4 1 5) "foo",EQB (AlexPn 8 1 9),
+Right [LET (AlexPn 0 1 1),ID (AlexPn 4 1 5) "foo",EQL (AlexPn 8 1 9),
        LAM (AlexPn 10 1 11),ID (AlexPn 11 1 12) "x",ARROW (AlexPn 13 1 14),
        IF (AlexPn 16 1 17),ID (AlexPn 19 1 20) "y",THEN (AlexPn 21 1 22),
        ID (AlexPn 26 1 27) "z",ELSE (AlexPn 28 1 29),ID (AlexPn 33 1 34) "w",
@@ -673,7 +694,7 @@ Add the following tokens to the lexer and parser.
 | `*`     | `MUL`   |
 | `<`     | `LESS`  |
 | `<=`    | `LEQ`   |
-| `==`    | `EQL`   |
+| `==`    | `EQB`   |
 | `/=`    | `NEQ`   |
 | `\|\|`  | `OR`    |
 | `&&`    | `AND`   |
@@ -694,7 +715,7 @@ recompiled, you should get the following behavior:
 Right [PLUS (AlexPn 0 1 1),MINUS (AlexPn 2 1 3),
        MUL (AlexPn 4 1 5),OR (AlexPn 6 1 7),
        LESS (AlexPn 9 1 10),LEQ (AlexPn 11 1 12),
-       EQB (AlexPn 14 1 15),AND (AlexPn 16 1 17),
+       EQL (AlexPn 14 1 15),AND (AlexPn 16 1 17),
        NEQ (AlexPn 19 1 20)]
 
 >>> parse "x + y"

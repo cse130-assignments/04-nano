@@ -114,7 +114,6 @@ data Binop
   = Plus
   | Minus
   | Mul
-  | Div
   | Eq
   | Ne
   | Lt

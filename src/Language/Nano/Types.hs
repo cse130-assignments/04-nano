@@ -74,7 +74,7 @@ binopString :: Binop -> String
 binopString Plus  = "+"
 binopString Minus = "-"
 binopString Mul   = "*"
-binopString Eq    = "="
+binopString Eq    = "=="
 binopString Ne    = "!="
 binopString Lt    = "<"
 binopString Le    = "<="

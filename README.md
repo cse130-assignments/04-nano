@@ -485,12 +485,13 @@ data Value
 
 Recursive functions have a value represented as `VRec f env x e` where
 
+* `f` is the name of the function,
 * `env` is the environment at the point where
    that function was declared,
 * `x` is the formal parameter, and
 * `e` the body expression of the function.
 
-Whenever the first expression in a `let`-`in` expression is a lambda, it should
+Whenever `e1` in a `let e1 in e2` expression is a lambda, it should
 be treated as potentially recursive, and should evaluate to a `VRec` value
 instead of a `VClos` value.
 You will also have to extend the evaluation of `EApp` to support applying

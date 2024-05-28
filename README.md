@@ -81,7 +81,14 @@ The other lines will give you a readout for each test.
 You are encouraged to try to understand the testing code,
 but you will not be graded on this.
 
+## Submission Instructions
+
+Submit your code via the HW-4 assignment on Gradescope. Connect your GitHub account to Gradescope and select your repo. If you're in a group, don't forget to add your partner to the submission!
+
+Detailed instructions on how to submit your code directly from the Git repo can be found on Piazza.
+
 ## Debugging the File Tests/Writing Your Own File Tests
+
 These are the last tests you should work on. These tests take in files as input, and run it through the lexer, parser, and evaluator.
 
 Copy pasting the contents of a file into `make ghci` will run it as a Haskell program and won’t use your lexer, parser, or evaluator! To run a file through your Nano implementation, you want to use `execFile`.
@@ -90,12 +97,6 @@ The files themselves are in tests/input. In tests/Test.hs, the fileTests list th
 1. run `parseTokens <$> readFile "tests/input/t1.hs"` to run t1.hs through the lexer and get the Tokens. (start here, check for lexer errors, and if you’re good, move down!)
 2. run `parse <$> readFile "tests/input/t1.hs"` to run t1.hs through the lexer and parser and get an Expr,
 3. run `execFile "tests/input/t1.hs"` to run t1.hs through your lexer, parser and evaluator, and see what your interpreter is returning.
-
-## Submission Instructions
-
-Submit your code via the HW-4 assignment on Gradescope. Connect your Github account to Gradescope and select your repo. If you're in a group, don't forget to add your partner to the submission!
-
-Detailed instructions on how to submit your code directly from the Git repo can be found on Piazza.
 
 ## Data Structures and Overview
 
@@ -194,7 +195,7 @@ EApp (EVar "f") (EVar "x")
 4. (Recursive) Named Functions
 
 ```haskell
-let f = \ x -> f x in
+let f = \x -> f x in
   f 5
 ```
 
@@ -527,6 +528,9 @@ data Value = ...
            | VCons Value Value
 ```
 
+> Unlike in Haskell, list elements are not required to have the same type,
+> so `VCons (VInt 3) (VCons (VBool False) VNil)` is a valid list.
+
 In addition to the changes to the data types, add support
 for two functions `head` and `tail` which do what the
 corresponding Haskell functions do. Once you have implemented
@@ -548,6 +552,7 @@ following behavior
 >>> eval [] (EApp (EVar "head") (EBin Cons (EInt 1) ENil))
 *** Exception: Error {errMsg = "unbound variable: head"}
 ```
+
 The constructor `VPrim` will come in handy here.
 
 ## Problem 2: Nano Lexer (Lexer.x) and Parser (Parser.y)
@@ -557,6 +562,9 @@ for Nano using the tools `Alex` and `Happy`. (Google those terms
 for more information about them.) In each subproblem, we will
 increase the complexity of the expressions parsed by your
 implementation.
+
+You need to run `make` whenever you edit the lexer and parser
+in order for your changes to take effect.
 
 ### (a) 15 points
 
@@ -574,7 +582,7 @@ rules for
   which holds the name of the variable (identifier)
   represented by the token. An identifier is a
   letter (capital or lowercase) followed by
-  zero or more letters or digits.
+  zero or more letters, digits, underscores, or apostrophes.
 
 * `NUM` which has a single `Int` argument,
    which holds the value of the numeric literal,
@@ -743,7 +751,6 @@ right expression.
 Once you have implemented this functionality and recompiled,
 you should get the following behavior:
 
-
 ```haskell
 >>> parseTokens "() (  )"
 Right [LPAREN (AlexPn 0 1 1),RPAREN (AlexPn 1 1 2),LPAREN (AlexPn 3 1 4),RPAREN (AlexPn 6 1 7)]
@@ -767,10 +774,14 @@ ELet "z" (EInt 3) (ELet "y" (EInt 2) (ELet "x" (EInt 1) (ELet "z1" (EInt 0) (EBi
 
 ### (e) 35 points
 
-Give function application (`f x`) the correct precedence and assocatitivity.
+Give function application (`f x`) the correct precedence and associativity.
 The starter code already provides the correct parser directives for the binop
 operations, but you're responsible for making sure function application has the
-highest precedence and has left assocativity.
+highest precedence and has left associativity.
+
+You should implement this with _grammar factoring_, as described in lecture
+(and briefly in the Parser2 example of the
+[arith](https://github.com/cse130-assignments/arith) tutorial).
 
 **Operators Precedence Order**
 
@@ -789,7 +800,7 @@ so `"1+f x*3"` should be parsed as if it were
 `"1+((f x)*3)"`.
 
 **Associativity** All arithmetic and logical operators, as well as function application are *left associative*,
-so `"1-2-3-4"` should be parsed as `"((1-2)-3)-4"`, 
+so `"1-2-3-4"` should be parsed as `"((1-2)-3)-4"`,
 and `"f x y z"` should be parsed as `"((f x) y) z"`.
 
 Once you have implemented this functionality and recompiled,

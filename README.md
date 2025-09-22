@@ -368,9 +368,9 @@ False
 *** Exception: Error {errMsg = "type error: binop"}
 ```
 
-Also note that, so long as you error message is appropriate, you will receive
-points. We will not be checking for an exact error message. However,
-it should contain the substring 'type error:'.
+The error messages must contain the substring `"type error"` to
+be accepted by the autograder, but you may include additional
+information in the error message if you like.
 
 Next, implement the evaluation of `EIf p t f` expressions.
 

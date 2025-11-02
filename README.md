@@ -1,4 +1,4 @@
-# Assignment 4: Nano (Points: 58 public / 270 private)
+# Assignment 4: Nano (Points: 58 public + 212 private = 270 total)
 
 ## Overview
 
